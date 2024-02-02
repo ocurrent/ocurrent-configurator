@@ -1,0 +1,1 @@
+dune exec --release -- bin/main.exe mtelvers/ansible --github-webhook-secret-file secrets/webhook-secret --github-oauth secrets/oauth.json --github-token-file ~/.github/github-activity-token --confirm harmless

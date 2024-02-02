@@ -1,0 +1,15 @@
+(library
+ (name current_ansible)
+ (libraries
+  current
+  current.cache
+  current.term
+  current_git
+  current_github
+  current_incr
+  fmt
+  fpath
+  logs
+  ppx_deriving_yojson.runtime
+  lwt)
+ (preprocess (pps ppx_deriving.std ppx_deriving_yojson)))

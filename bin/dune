@@ -1,0 +1,17 @@
+(executable
+ (public_name ocurrent_configurator)
+ (name main)
+ (libraries
+  current
+  current.cache
+  current_git
+  current_github
+  current_docker
+  current_ansible
+  cmdliner
+  lwt
+  lwt.unix
+  logs.fmt
+  logs.cli
+  prometheus-app.unix
+  dockerfile))
