@@ -35,21 +35,26 @@ let github_status_of_state = function
   | Error (`Msg m)    -> Github.Api.Status.v ~url `Failure ~description:m
 
 let pipeline ~github ~repo () =
+        (*
         let repo2 = { Github.Repo_id.owner = "mtelvers"; name = "ansible" } in
         let refs = Github.Api.ci_refs github repo2 in
         let pipeline = refs |> Current.list_iter (module Github.Api.Commit) @@ fun commit ->
           let src = Current_git.fetch (Current.map Github.Api.Commit.id commit) in
           Ansible.play ~schedule:weekly ~limit:["x86-bm-c4.sw.ocaml.org"] (Current.map (fun src -> `Git src) src) |>
           Current.state |> Current.map github_status_of_state |> Github.Api.Commit.set_status commit "ocurrent" in
+*)
   let name = "live" in
   let commit = Github.Api.head_of github repo (`Ref ("refs/heads/" ^ name)) in
   let src = Current_git.fetch (Current.map Github.Api.Commit.id commit) in
   let pipeline2 =
-  Ansible.play ~schedule:weekly ~limit:["x86-bm-c4.sw.ocaml.org"] (Current.map (fun src -> `Git src) src)
+  Ansible.enumerate ~schedule:weekly ~limit:["x86-bm-c4.sw.ocaml.org"] (Current.map (fun src -> `Git src) src)
   |> Current.state
   |> Current.map github_status_of_state
   |> Github.Api.Commit.set_status commit "ocurrent" in
+  (*
   Current.all ([pipeline; pipeline2])
+  *)
+  Current.all [pipeline2]
 
 let main config auth mode github repo =
   let engine = Current.Engine.create ~config (pipeline ~github ~repo) in
