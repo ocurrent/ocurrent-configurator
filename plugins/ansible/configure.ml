@@ -65,7 +65,8 @@ let build { pool; timeout; level } job key =
   let playbooks = List.map (fun p ->
     let name = Playbook.name p in
     let content = read_whole_file (dir ^ "/" ^ name) in
-    Playbook.v ~name ~content
+    let validity = Playbook.validity p in
+    Playbook.v ~name ~content ~validity
   ) (Config.playbooks t) in
   Lwt.return (Stdlib.Result.ok (Config.v ~playbooks))
 

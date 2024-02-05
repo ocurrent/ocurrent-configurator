@@ -1,6 +1,7 @@
 type t
-val v : name:string -> content:string -> t
+val v : name:string -> content:string -> validity:int option -> t
 val name : t -> string
+val validity : t -> int option
 val equal : t -> t -> bool
 val compare : t -> t -> int
 val pp : t Fmt.t

@@ -28,4 +28,7 @@ let run commit playbook =
   Current.component "ansible-playbook" |>
   let> playbook = playbook
   and+ commit = commit in
-  Run_cache.get { commit } { playbook }
+  let schedule = match Playbook.validity playbook with
+  | None -> None
+  | Some days -> Some (Current_cache.Schedule.v ~valid_for:(Duration.of_day days) ()) in
+  Run_cache.get ?schedule { commit } { playbook }
