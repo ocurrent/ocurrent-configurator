@@ -7,3 +7,4 @@ val pp : t Fmt.t
 val digest : t -> string
 val marshal : t -> string
 val unmarshal : string -> t
+val load : string -> t

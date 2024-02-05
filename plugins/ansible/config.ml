@@ -1,5 +1,5 @@
-open Sexplib.Std
 open Sexplib
+open Sexplib.Std
 
 type t = {
   playbooks : Playbook.t list
@@ -34,19 +34,5 @@ let unmarshal s =
     | _ -> failwith "Expected playbook") in
   { playbooks }
 
-type q =
-  { a : string
-  ; b : int
-  ; c : float option
-  }
-[@@deriving sexp]
-
-let () =
-        let () = sexp_of_t { playbooks = [
-                Playbook.v ~name:"foo" ~content:"bar";
-                Playbook.v ~name:"foo" ~content:"bar";
-   ] } |> Sexplib.Sexp.to_string |> print_string in
-  let t = Sexp.load_sexp "example.scm" |> t_of_sexp in
-  List.iter (fun p ->
-  Printf.printf "%s\n%!" (Playbook.marshal p)
-        ) t.playbooks
+let load file =
+  Sexp.load_sexp file |> t_of_sexp

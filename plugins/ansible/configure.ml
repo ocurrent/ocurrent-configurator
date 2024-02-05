@@ -57,12 +57,16 @@ let build { pool; timeout; level } job key =
   let level = Option.value level ~default:Current.Level.Average in
   Current.Job.start ?timeout ?pool job ~level >>= fun () ->
   with_context ~job commit @@ fun dir ->
+  let dir = Fpath.to_string dir in
+  let t = Config.load (dir ^ "/" ^ "configuration.sexp") in
           let _ = limit in
           let _ = playbook in
           let _ = inventory in
-  let dir = Fpath.to_string dir in
-  let yaml_files = Sys.readdir dir |> Array.to_list |> List.filter (fun x -> Filename.extension x  = ".yml") in
-  let playbooks = List.map (fun name -> Playbook.v ~name ~content:(read_whole_file (dir ^ "/" ^ name))) yaml_files in
+  let playbooks = List.map (fun p ->
+    let name = Playbook.name p in
+    let content = read_whole_file (dir ^ "/" ^ name) in
+    Playbook.v ~name ~content
+  ) (Config.playbooks t) in
   Lwt.return (Stdlib.Result.ok (Config.v ~playbooks))
 
 let pp f key = Fmt.pf f "@[<v2>Ansible parameters %a@]" Key.pp key
