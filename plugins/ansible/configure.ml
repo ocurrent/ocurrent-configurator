@@ -6,7 +6,7 @@ type t = {
   level : Current.Level.t option;
 }
 
-let id = "docker-build"
+let id = "configure"
 
 module Key = struct
   type t = {
@@ -34,24 +34,7 @@ module Key = struct
   let pp f t = Yojson.Safe.pretty_print f (to_json t)
 end
 
-module Value = struct
-  type t = {
-    playbooks : (string * string) list
-  }
-
-  let digest { playbooks } =
-    Yojson.Safe.to_string @@ `Assoc [
-      "playbooks", `Assoc (List.map (fun (name, content) -> name, `String content) playbooks);
-    ]
-
-  let marshal t = digest t
-
-  let unmarshal s =
-    let open Yojson.Safe.Util in
-    let json = Yojson.Safe.from_string s in
-    let playbooks = json |> member "playbooks" |> to_assoc |> List.map (fun (n, c) -> n, (to_string c)) in
-    { playbooks }
-end
+module Value = Config
 
 let with_context ~job context fn =
   let open Lwt_result.Infix in
@@ -79,8 +62,8 @@ let build { pool; timeout; level } job key =
           let _ = inventory in
   let dir = Fpath.to_string dir in
   let yaml_files = Sys.readdir dir |> Array.to_list |> List.filter (fun x -> Filename.extension x  = ".yml") in
-  let playbooks = List.map (fun yml -> yml, read_whole_file (dir ^ "/" ^ yml)) yaml_files in
-  Lwt.return (Stdlib.Result.ok { Value.playbooks })
+  let playbooks = List.map (fun name -> Playbook.v ~name ~content:(read_whole_file (dir ^ "/" ^ name))) yaml_files in
+  Lwt.return (Stdlib.Result.ok (Config.v ~playbooks))
 
 let pp f key = Fmt.pf f "@[<v2>Ansible parameters %a@]" Key.pp key
 

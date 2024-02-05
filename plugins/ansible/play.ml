@@ -6,7 +6,7 @@ type t = {
   level : Current.Level.t option;
 }
 
-let id = "docker-build"
+let id = "ansible-play"
 
 module Key = struct
   type t = {
