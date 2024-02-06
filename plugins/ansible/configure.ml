@@ -63,5 +63,3 @@ let build { pool; timeout; level } job key =
 let pp f key = Fmt.pf f "@[<v2>Reading parameters from %a@]" Key.pp key
 
 let auto_cancel = true
-
-let _ = Config.load ("../ansible/configuration.sexp")
