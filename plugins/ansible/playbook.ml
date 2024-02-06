@@ -1,8 +1,9 @@
+open Sexplib
 open Sexplib.Std
 
 type t = {
   name : string;
-  content : string [@default ""] [@sexp_drop_default (fun _ _  -> true)];
+  content : string option [@sexp.option];
   validity : int option [@sexp.option];
   inventory : string option [@sexp.option];
   limit : string list option [@sexp.option];
@@ -29,35 +30,8 @@ let compare = compare
 
 let equal = (=)
 
-let digest { name; content; validity; inventory; limit; deps } =
-  let j = [
-    "name", `String name;
-    "content", `String content;
-  ] in
-  let j = match validity with
-    | Some v -> ("validity", `Int v) :: j
-    | None -> j in
-  let j = match inventory with
-    | Some v -> ("inventory", `String v) :: j
-    | None -> j in
-  let j = match limit with
-    | Some v -> ("limit", `List (List.map (fun x -> `String x) v)) :: j
-    | None -> j in
-  let j = match deps with
-    | Some v -> ("deps", `List (List.map (fun x -> `String x) v)) :: j
-    | None -> j in
-  Yojson.Safe.to_string @@ `Assoc j
-
-let marshal t = digest t
+let marshal t =
+  sexp_of_t t |> Sexp.to_string
 
 let unmarshal s =
-  let open Yojson.Safe.Util in
-  let json = Yojson.Safe.from_string s in
-  let name = json |> member "name" |> to_string in
-  let content = json |> member "content" |> to_string in
-  let validity = json |> member "validity" |> to_int_option in
-  let inventory = json |> member "inventory" |> to_string_option in
-  let to_list_option lst = match lst with [] -> None | l -> Some l in
-  let limit = json |> member "limit" |> to_list |> List.map (to_string) |> to_list_option in
-  let deps = json |> member "deps" |> to_list |> List.map (to_string) |> to_list_option in
-  { name = name; content; validity; inventory; limit; deps }
+  Sexp.of_string s |> t_of_sexp

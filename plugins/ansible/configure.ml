@@ -51,9 +51,9 @@ let build { pool; timeout; level } job key =
     let name = Playbook.name p in
     let validity = Playbook.validity p in
     let inventory = Playbook.inventory p in
-    let limit = Some (name :: (Option.value ~default:[] (Playbook.limit p))) in
+    let limit = Playbook.limit p in
     let deps = Some (name :: (Option.value ~default:[] (Playbook.deps p))) in
-    let content = Option.value ~default:[] deps |> List.map (fun f -> Digest.file (dir ^ "/" ^ f) |> Digest.to_hex) |> String.concat "," in
+    let content = Some (Option.value ~default:[] deps |> List.map (fun f -> Digest.file (dir ^ "/" ^ f) |> Digest.to_hex) |> String.concat ",") in
     let playbook = Playbook.v ~name ~content ~validity ~inventory ~limit ~deps in
     let _ = Log.info (fun f -> f "%s" (Playbook.marshal playbook)) in
     playbook
