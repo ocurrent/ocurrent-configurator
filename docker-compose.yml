@@ -1,0 +1,29 @@
+version: "3.7"
+services:
+  configurator:
+    image: mtelvers/ocurrent-configurator:latest
+    command: mtelvers/ansible --github-webhook-secret-file /run/secrets/webhook-secret --github-oauth /run/secrets/oauth.json --github-token-file /run/secrets/github-activity-token --confirm harmless
+    ports:
+      - 8080:8080
+    volumes:
+      - configurator_data:/var/lib/ocurrent-configurator
+    restart: always
+    secrets:
+      - webhook-secret
+      - oauth.json
+      - github-activity-token
+      - configurator-private-key
+      - admin.cap
+volumes:
+  configurator_data:
+secrets:
+  webhook-secret:
+    file: secrets/webhook-secret
+  oauth.json:
+    file: secrets/oauth.json
+  github-activity-token:
+    file: secrets/github-activity-token
+  configurator-private-key:
+    file: secrets/configurator-private-key
+  admin.cap:
+    file: secrets/admin.cap

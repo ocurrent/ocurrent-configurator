@@ -10,8 +10,10 @@ ADD --chown=opam . .
 RUN opam config exec -- dune build ./_build/install/default/bin/ocurrent-configurator
 
 FROM debian:12
-RUN apt-get update && apt-get install libsqlite3-dev libev-dev ca-certificates git netbase ansible -y --no-install-recommends
+RUN apt-get update && apt-get install libsqlite3-dev libev-dev ca-certificates git netbase graphviz ansible -y --no-install-recommends
 WORKDIR /var/lib/ocurrent-configurator
 ENTRYPOINT ["/usr/local/bin/ocurrent-configurator"]
+COPY configure-ssh.sh /usr/local/bin/configure-ssh
+RUN configure-ssh
 COPY --from=build /home/opam/.opam/4.14/bin/ocluster-admin /usr/local/bin/
 COPY --from=build /src/_build/install/default/bin/ocurrent-configurator /usr/local/bin/
