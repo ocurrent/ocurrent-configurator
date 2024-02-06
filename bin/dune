@@ -1,5 +1,5 @@
 (executable
- (public_name ocurrent_configurator)
+ (public_name ocurrent-configurator)
  (name main)
  (libraries
   current
@@ -13,5 +13,4 @@
   lwt.unix
   logs.fmt
   logs.cli
-  prometheus-app.unix
-  dockerfile))
+  prometheus-app.unix))

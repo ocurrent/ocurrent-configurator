@@ -1,5 +1,5 @@
 FROM ocaml/opam:debian-12-ocaml-4.14 AS build
-RUN sudo apt-get update && sudo apt-get install pkg-config libgmp-dev -y --no-install-recommends
+RUN sudo apt-get update && sudo apt-get install pkg-config libgmp-dev graphviz libev-dev libffi-dev libsqlite3-dev -y --no-install-recommends
 RUN cd ~/opam-repository && git fetch -q origin master && opam update
 WORKDIR /src
 COPY --chown=opam ocurrent-configurator.opam /src/
