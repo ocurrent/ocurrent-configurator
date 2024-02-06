@@ -4,7 +4,7 @@ type t = {
   commit : Current_git.Commit.t;
 }
 
-let id = "docker-build"
+let id = "ansible-playbook"
 
 module Key = struct
   type t = {
@@ -37,7 +37,13 @@ let build { commit } job key =
           let _ = commit in
           Lwt_result.return ()
           *)
-  let cmd = "", Array.of_list (["ansible-playbook"; Playbook.name playbook]) in
+  let inventory = match Playbook.inventory playbook with
+  | Some i -> ["-i"; i]
+  | None -> [] in
+  let limit = match Playbook.limit playbook with
+  | Some l -> ["--limit"; String.concat "," l]
+  | None -> [] in
+  let cmd = "", Array.of_list (["ansible-playbook"] @ inventory @ limit @ [Playbook.name playbook]) in
   let pp_error_command f = Fmt.string f "ansible-playbook" in
   Current.Process.exec ~cwd:dir ~cancellable:true ~pp_error_command ~job cmd >|= function
   | Error _ as e -> e

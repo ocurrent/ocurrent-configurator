@@ -29,8 +29,6 @@ let has_role user role =
     | ("github:mtelvers"), _ -> true        (* These users have all roles *)
     | _ -> role = `Viewer
 
-let weekly = Current_cache.Schedule.v ~valid_for:(Duration.of_day 7) ()
-
 (*
 let github_status_of_state = function
   | Ok _              -> Github.Api.Status.v ~url `Success ~description:"Passed"
@@ -51,7 +49,7 @@ let pipeline ~github ~repo () =
   let commit = Github.Api.head_of github repo (`Ref ("refs/heads/" ^ name)) in
   let src = Current_git.fetch (Current.map Github.Api.Commit.id commit) in
   let pipeline = 
-  Ansible.configure ~schedule:weekly ~limit:["x86-bm-c4.sw.ocaml.org"] (Current.map (fun src -> `Git src) src)
+  Ansible.configure (Current.map (fun src -> `Git src) src)
   |> Current.map (Ansible.Config.playbooks)
   |> Current.list_iter (module Ansible.Playbook) (fun s -> Ansible.run src s) in
   (*

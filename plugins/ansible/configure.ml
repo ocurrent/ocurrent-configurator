@@ -11,9 +11,6 @@ let id = "configure"
 module Key = struct
   type t = {
     commit : [ `No_context | `Git of Current_git.Commit.t | `Dir of Fpath.t ];
-    limit : string list option;
-    playbook : string option;
-    inventory : string option;
   }
 
   let source_to_json = function
@@ -21,12 +18,9 @@ module Key = struct
     | `Git commit -> `String (Current_git.Commit.hash commit)
     | `Dir path -> `String (Fpath.to_string path)
 
-  let to_json { commit; limit; playbook; inventory } =
+  let to_json { commit } =
     `Assoc [
       "commit", source_to_json commit;
-      "limit", [%derive.to_yojson:string list option] limit;
-      "playbook", [%derive.to_yojson:string option] playbook;
-      "inventory", [%derive.to_yojson:string option] inventory;
     ]
 
   let digest t = Yojson.Safe.to_string (to_json t)
@@ -46,30 +40,28 @@ let with_context ~job context fn =
       fn dir
   | `Git commit -> Current_git.with_checkout ~job commit fn
 
-let read_whole_file filename =
-    let ch = open_in_bin filename in
-    let s = really_input_string ch (in_channel_length ch) in
-    close_in ch;
-    s
-
 let build { pool; timeout; level } job key =
-  let { Key.commit; limit; playbook; inventory } = key in
+  let { Key.commit } = key in
   let level = Option.value level ~default:Current.Level.Average in
   Current.Job.start ?timeout ?pool job ~level >>= fun () ->
   with_context ~job commit @@ fun dir ->
   let dir = Fpath.to_string dir in
   let t = Config.load (dir ^ "/" ^ "configuration.sexp") in
-          let _ = limit in
-          let _ = playbook in
-          let _ = inventory in
   let playbooks = List.map (fun p ->
     let name = Playbook.name p in
-    let content = read_whole_file (dir ^ "/" ^ name) in
     let validity = Playbook.validity p in
-    Playbook.v ~name ~content ~validity
+    let inventory = Playbook.inventory p in
+    let limit = Some (name :: (Option.value ~default:[] (Playbook.limit p))) in
+    let deps = Some (name :: (Option.value ~default:[] (Playbook.deps p))) in
+    let content = Option.value ~default:[] deps |> List.map (fun f -> Digest.file (dir ^ "/" ^ f) |> Digest.to_hex) |> String.concat "," in
+    let playbook = Playbook.v ~name ~content ~validity ~inventory ~limit ~deps in
+    let _ = Log.info (fun f -> f "%s" (Playbook.marshal playbook)) in
+    playbook
   ) (Config.playbooks t) in
   Lwt.return (Stdlib.Result.ok (Config.v ~playbooks))
 
-let pp f key = Fmt.pf f "@[<v2>Ansible parameters %a@]" Key.pp key
+let pp f key = Fmt.pf f "@[<v2>Reading parameters from %a@]" Key.pp key
 
 let auto_cancel = true
+
+let _ = Config.load ("../ansible/configuration.sexp")

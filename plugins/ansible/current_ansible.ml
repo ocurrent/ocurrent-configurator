@@ -16,11 +16,11 @@ let play ?level ?schedule ?timeout ?inventory ?limit ?playbook commit =
 
 module Configure_cache = Current_cache.Make(Configure)
 
-let configure ?level ?schedule ?timeout ?inventory ?limit ?playbook commit =
+let configure ?level ?schedule ?timeout commit =
   Current.component "configure" |>
   let> commit = commit in
   Configure_cache.get ?schedule { pool = None; timeout; level }
-  { commit; limit; playbook; inventory }
+  { commit }
 
 module Run_cache = Current_cache.Make(Run)
 
