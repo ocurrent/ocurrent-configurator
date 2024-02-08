@@ -32,18 +32,16 @@ let build { commit } job key =
   let { Key.playbook } = key in
   Current.Job.start job ~level:Current.Level.Mostly_harmless >>= fun () ->
   Current_git.with_checkout ~job commit @@ fun dir ->
-          (*
-          let _ = playbook in
-          let _ = commit in
-          Lwt_result.return ()
-          *)
   let inventory = match Playbook.inventory playbook with
   | Some i -> ["-i"; i]
+  | None -> [] in
+  let vars = match Playbook.vars playbook with
+  | Some i -> ["-e"; "@" ^ i; "--vault-password-file"; "/run/secrets/vault-password"]
   | None -> [] in
   let limit = match Playbook.limit playbook with
   | Some l -> ["--limit"; String.concat "," l]
   | None -> [] in
-  let cmd = "", Array.of_list (["ansible-playbook"] @ inventory @ limit @ [Playbook.name playbook]) in
+  let cmd = "", Array.of_list (["ansible-playbook"] @ inventory @ vars @ limit @ [Playbook.name playbook]) in
   let pp_error_command f = Fmt.string f "ansible-playbook" in
   Current.Process.exec ~cwd:dir ~cancellable:true ~pp_error_command ~job cmd >|= function
   | Error _ as e -> e

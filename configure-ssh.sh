@@ -9,6 +9,11 @@ for host in \
   x86-bm-c7.sw.ocaml.org \
   x86-bm-c8.sw.ocaml.org \
   x86-bm-c9.sw.ocaml.org \
+  leafcutter.caelum.ci.dev \
+  carpenter.caelum.ci.dev \
+  riscv-worker-01.caelum.ci.dev \
+  riscv-worker-02.caelum.ci.dev \
+  riscv-worker-03.caelum.ci.dev \
   ci3.ocamllabs.io \
   ci4.ocamllabs.io \
   ci.mirage.io \
@@ -26,7 +31,6 @@ for host in \
   opam.ci.ocaml.org \
   ocaml.ci.dev \
   check.ci.ocaml.org \
-  x86-bm-c9.sw.ocaml.org \
   147.75.84.37 ; do
   ssh-keyscan -H -t ecdsa-sha2-nistp256 $host >> ~/.ssh/known_hosts
 done

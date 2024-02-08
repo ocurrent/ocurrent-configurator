@@ -27,3 +27,7 @@ secrets:
     file: secrets/configurator-private-key
   admin.cap:
     file: secrets/admin.cap
+  vault-password:
+    file: secrets/vault-password
+  deploy.ci.ocaml.org.vars:
+    file: secrets/deploy.ci.ocaml.org.vars
