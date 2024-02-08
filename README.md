@@ -4,7 +4,7 @@ Ansible Playbooks that it finds there.
 The repository must contain a file `configuration.sexp`, which the
 pipeline reads.  The minimal configuration file is given below:
 
-```
+```lisp
 ((playbooks(((name playbook.yml)))))
 ```
 
@@ -16,7 +16,7 @@ to give the location of the host inventory file.
 Alternatively, an inventory can be specified as shown below, resulting in
 `ansible-playbook -i hosts playbook.yml`.
 
-```
+```lisp
 ((playbooks(((name playbook.yml)(inventory hosts)))))
 ```
 
@@ -27,7 +27,7 @@ deployments can be specified using `validity`, which indicates the number
 of days between deployments.  The hosts targeted can be limited with the
 `limit` directive.
 
-```
+```lisp
 ((playbooks (
   (
    (name update-something-else.yml)
@@ -45,6 +45,50 @@ of days between deployments.  The hosts targeted can be limited with the
   )
 )))
 ```
+
+Secrets can be handled using encrypted variables in docker secrets.
+
+```lisp
+((playbooks (
+  (
+   (name playbook.yml)
+   (vars /run/secrets/my-secret-vars.yml)
+  )
+)))
+```
+
+This translates into the following command line:
+
+```sh
+ansible-playbook -e @/run/secrets/my-secret-vars.yml --vault-password-file /run/secrets/vault-password playbook.yml
+```
+
+Create `my-secret-vars.yml` using `ansible-vault create my-secret-vars.yml` with the variables you need:
+
+```yaml
+my-var: foo
+
+my-long-var: |
+  foo
+  bar
+```
+
+Within the playbook these variables can be used as any other
+`{{ my-var }}`, however a typical use might be to create Docker
+secrets.  `b64encode` is advised for any JSON files to prevent Ansible
+from decoding/recoding them.
+
+```yaml
+- name: Create Docker secrets
+  docker_secret:
+    name: "{{ item }}"
+    data: "{{ lookup('vars', item) | b64encode }}"
+    data_is_b64: true
+  loop:
+    - my-var
+    - my-long-var
+```
+
 
 # Deployment
 

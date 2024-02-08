@@ -14,6 +14,8 @@ services:
       - github-activity-token
       - configurator-private-key
       - admin.cap
+      - vault-password
+      - deploy.ci.ocaml.org.yml
 volumes:
   configurator_data:
 secrets:
@@ -29,5 +31,5 @@ secrets:
     file: secrets/admin.cap
   vault-password:
     file: secrets/vault-password
-  deploy.ci.ocaml.org.vars:
-    file: secrets/deploy.ci.ocaml.org.vars
+  deploy.ci.ocaml.org.yml:
+    file: secrets/deploy.ci.ocaml.org.yml
