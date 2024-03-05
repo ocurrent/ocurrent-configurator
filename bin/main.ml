@@ -48,10 +48,11 @@ let pipeline ~github ~repo () =
   let name = "live" in
   let commit = Github.Api.head_of github repo (`Ref ("refs/heads/" ^ name)) in
   let src = Current_git.fetch (Current.map Github.Api.Commit.id commit) in
+  let pool = Current.Pool.create ~label:"ansible" 1 in
   let pipeline = 
   Ansible.configure (Current.map (fun src -> `Git src) src)
   |> Current.map (Ansible.Config.playbooks)
-  |> Current.list_iter (module Ansible.Playbook) (fun s -> Ansible.run src s) in
+  |> Current.list_iter (module Ansible.Playbook) (fun s -> Ansible.run ~pool src s) in
   (*
   let pipeline2 =
   Ansible.configure ~schedule:weekly ~limit:["x86-bm-c4.sw.ocaml.org"] (Current.map (fun src -> `Git src) src)

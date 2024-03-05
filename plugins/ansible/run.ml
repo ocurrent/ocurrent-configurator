@@ -1,6 +1,8 @@
 open Lwt.Infix
 
 type t = {
+  pool : unit Current.Pool.t option;
+  level : Current.Level.t option;
   commit : Current_git.Commit.t;
 }
 
@@ -28,9 +30,10 @@ let with_context ~job context fn =
       fn dir
   | `Git commit -> Current_git.with_checkout ~job commit fn
 
-let build { commit } job key =
+let build { pool; level; commit } job key =
   let { Key.playbook } = key in
-  Current.Job.start job ~level:Current.Level.Mostly_harmless >>= fun () ->
+  let level = Option.value level ~default:Current.Level.Dangerous in
+  Current.Job.start job ?pool ~level >>= fun () ->
   Current_git.with_checkout ~job commit @@ fun dir ->
   let inventory = match Playbook.inventory playbook with
   | Some i -> ["-i"; i]

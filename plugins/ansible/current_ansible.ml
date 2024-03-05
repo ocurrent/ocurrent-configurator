@@ -24,11 +24,11 @@ let configure ?level ?schedule ?timeout commit =
 
 module Run_cache = Current_cache.Make(Run)
 
-let run commit playbook =
+let run ?pool ?level commit playbook =
   Current.component "ansible-playbook" |>
   let> playbook = playbook
   and+ commit = commit in
   let schedule = match Playbook.validity playbook with
   | None -> None
   | Some days -> Some (Current_cache.Schedule.v ~valid_for:(Duration.of_day days) ()) in
-  Run_cache.get ?schedule { commit } { playbook }
+  Run_cache.get ?schedule { pool; level; commit } { playbook }
