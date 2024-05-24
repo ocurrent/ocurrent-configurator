@@ -16,6 +16,14 @@ services:
       - admin.cap
       - vault-password
       - deploy.ci.ocaml.org.yml
+      - registry.ci.dev.yml
+      - watch.ocaml.org.yml
+      - docs.ci.ocaml.org.yml
+      - deploy.ci.dev.yml
+      - scheduler.ci.dev.yml
+      - images.ci.ocaml.org.yml
+      - ocaml-multicore.ci.dev.yml
+      - check.ci.ocaml.org.yml
 volumes:
   configurator_data:
 secrets:
@@ -33,3 +41,19 @@ secrets:
     file: secrets/vault-password
   deploy.ci.ocaml.org.yml:
     file: secrets/deploy.ci.ocaml.org.yml
+  registry.ci.dev.yml:
+    file: secrets/registry.ci.dev.yml
+  watch.ocaml.org.yml:
+    file: secrets/watch.ocaml.org.yml
+  docs.ci.ocaml.org.yml:
+    file: secrets/docs.ci.ocaml.org.yml
+  deploy.ci.dev.yml:
+    file: secrets/deploy.ci.dev.yml
+  scheduler.ci.dev.yml:
+    file: secrets/scheduler.ci.dev.yml
+  images.ci.ocaml.org.yml:
+    file: secrets/images.ci.ocaml.org.yml
+  ocaml-multicore.ci.dev.yml:
+    file: secrets/ocaml-multicore.ci.dev.yml
+  check.ci.ocaml.org.yml:
+    file: secrets/check.ci.ocaml.org.yml
