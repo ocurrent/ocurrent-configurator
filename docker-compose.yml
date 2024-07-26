@@ -2,7 +2,7 @@ version: "3.7"
 services:
   configurator:
     image: mtelvers/ocurrent-configurator:latest
-    command: mtelvers/ansible --github-webhook-secret-file /run/secrets/webhook-secret --github-oauth /run/secrets/oauth.json --github-token-file /run/secrets/github-activity-token --confirm harmless
+    command: mtelvers/ansible --github-webhook-secret-file /run/secrets/webhook-secret --github-oauth /run/secrets/oauth.json --github-token-file /run/secrets/github-activity-token --confirm average
     ports:
       - 8080:8080
     volumes:
@@ -24,6 +24,9 @@ services:
       - images.ci.ocaml.org.yml
       - ocaml-multicore.ci.dev.yml
       - check.ci.ocaml.org.yml
+      - ocaml.ci.dev.yml
+      - opam.ci.ocaml.org.yml
+      - worker.yml
 volumes:
   configurator_data:
 secrets:
@@ -57,3 +60,13 @@ secrets:
     file: secrets/ocaml-multicore.ci.dev.yml
   check.ci.ocaml.org.yml:
     file: secrets/check.ci.ocaml.org.yml
+  ocaml.ci.dev.yml:
+    file: secrets/ocaml.ci.dev.yml
+  opam.ci.ocaml.org.yml:
+    file: secrets/opam.ci.ocaml.org.yml
+  worker.yml:
+    file: secrets/worker.yml
+networks:
+  default:
+    name: label_maker_default
+    external: true

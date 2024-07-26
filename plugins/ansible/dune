@@ -12,4 +12,5 @@
   logs
   ppx_deriving_yojson.runtime
   lwt)
- (preprocess (pps ppx_deriving.std ppx_deriving_yojson ppx_sexp_conv)))
+ (preprocess
+  (pps ppx_deriving.std ppx_deriving_yojson ppx_sexp_conv)))

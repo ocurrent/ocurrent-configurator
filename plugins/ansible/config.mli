@@ -1,5 +1,7 @@
 type t
-val v : playbooks:Playbook.t list -> t
+
+val v : name:string -> playbooks:Playbook.t list -> t
+val name : t -> string
 val playbooks : t -> Playbook.t list
 val equal : t -> t -> bool
 val compare : t -> t -> int

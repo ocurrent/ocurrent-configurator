@@ -1,5 +1,24 @@
-type t
-val v : name:string -> content:string option -> validity:int option -> inventory:string option -> vars:string option -> limit:string list option -> deps:string list option -> t
+type t = {
+  name : string;
+  content : string option; [@sexp.option]
+  validity : int option; [@sexp.option]
+  inventory : string option; [@sexp.option]
+  vars : string option; [@sexp.option]
+  limit : string list option; [@sexp.option]
+  deps : string list option; [@sexp.option]
+}
+[@@deriving sexp]
+
+val v :
+  name:string ->
+  content:string option ->
+  validity:int option ->
+  inventory:string option ->
+  vars:string option ->
+  limit:string list option ->
+  deps:string list option ->
+  t
+
 val name : t -> string
 val validity : t -> int option
 val inventory : t -> string option
