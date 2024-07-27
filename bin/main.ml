@@ -23,7 +23,7 @@ let pipeline ~github ~repo () =
   let pipeline =
     Ansible.configure (Current.map (fun src -> `Git src) src)
     |> Current.map Ansible.Group.configs
-    |> Current.list_iter
+    |> Current.list_iter ~collapse_key:"group"
          (module Ansible.Config)
          (fun s -> Current.map Ansible.Config.playbooks s |> Current.list_iter (module Ansible.Playbook) (fun s -> Ansible.run ~pool src s))
   in
