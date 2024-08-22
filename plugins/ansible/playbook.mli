@@ -1,5 +1,6 @@
 type t = {
   name : string;
+  label : string option; [@sexp.option]
   content : string option; [@sexp.option]
   validity : int option; [@sexp.option]
   inventory : string option; [@sexp.option]
@@ -11,6 +12,7 @@ type t = {
 
 val v :
   name:string ->
+  label:string option ->
   content:string option ->
   validity:int option ->
   inventory:string option ->
@@ -20,6 +22,7 @@ val v :
   t
 
 val name : t -> string
+val label : t -> string option
 val validity : t -> int option
 val inventory : t -> string option
 val vars : t -> string option
