@@ -32,6 +32,8 @@ for host in \
   riscv-worker-01.caelum.ci.dev \
   riscv-worker-02.caelum.ci.dev \
   riscv-worker-03.caelum.ci.dev \
+  riscv-worker-04.caelum.ci.dev \
+  riscv-worker-05.caelum.ci.dev \
   s390x-worker-01.marist.ci.dev \
   s390x-worker-02.marist.ci.dev \
   c2-1.equinix.ci.dev \
@@ -60,7 +62,6 @@ for host in \
   kydoime.caelum.ci.dev \
   ainia.caelum.ci.dev \
   okypous.caelum.ci.dev \
-  arm64-jade-1.equinix.ci.dev \
   arm64-jade-2.equinix.ci.dev \
   phoebe.caelum.ci.dev \
   clete.caelum.ci.dev \
@@ -72,6 +73,9 @@ for host in \
   marpe.caelum.ci.dev \
   orithia.caelum.ci.dev \
   ocaml-multicore.ci.dev \
+  plausible.ci.dev \
+  ocaml-1.osuosl.ci.dev \
+  ocaml-2.osuosl.ci.dev \
   147.75.84.37 ; do
   ssh-keyscan -H -t ecdsa-sha2-nistp256 $host >> ~/.ssh/known_hosts
 done
