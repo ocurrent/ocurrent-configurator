@@ -15,10 +15,12 @@ let has_role user role =
       | "github:mtelvers", _ -> true (* These users have all roles *)
       | _ -> role = `Viewer)
 
-let pipeline ~github ~repo () =
-  let name = "live" in
-  let commit = Github.Api.head_of github repo (`Ref ("refs/heads/" ^ name)) in
-  let src = Current_git.fetch (Current.map Github.Api.Commit.id commit) in
+let pipeline ~app () =
+  Github.App.installations app |> Current.list_iter (module Github.Installation) @@ fun installation ->
+  let repos = Github.Installation.repositories installation in
+  repos |> Current.list_iter ~collapse_key:"repo" (module Github.Api.Repo) @@ fun repo ->
+  let head = Github.Api.Repo.head_commit repo  in
+  let src = Git.fetch (Current.map Github.Api.Commit.id head) in
   let pool = Current.Pool.create ~label:"ansible" 1 in
   let pipeline =
     Ansible.configure (Current.map (fun src -> `Git src) src)
@@ -29,12 +31,13 @@ let pipeline ~github ~repo () =
   in
   Current.all [ pipeline ]
 
-let main config auth mode github repo =
-  let engine = Current.Engine.create ~config (pipeline ~github ~repo) in
+let main config auth mode app =
+  let engine = Current.Engine.create ~config (pipeline ~app) in
+  let webhook_secret = Current_github.App.webhook_secret app in
   let get_job_ids ~owner:_owner ~name:_name ~hash:_hash = [] in
   let routes =
     Routes.((s "login" /? nil) @--> Current_github.Auth.login auth)
-    :: Routes.((s "webhooks" / s "github" /? nil) @--> Github.webhook ~engine ~get_job_ids ~webhook_secret:(Github.Api.webhook_secret github))
+    :: Routes.((s "webhooks" / s "github" /? nil) @--> Github.webhook ~engine ~get_job_ids ~webhook_secret)
     :: Current_web.routes engine
   in
   let site = Current_web.Site.(v ?authn:(Option.map Current_github.Auth.make_login_uri auth) ~has_role) ~name:program_name routes in
@@ -44,12 +47,10 @@ let main config auth mode github repo =
 
 open Cmdliner
 
-let repo = Arg.required @@ Arg.pos 0 (Arg.some Github.Repo_id.cmdliner) None @@ Arg.info ~doc:"The GitHub repository (owner/name) to monitor." ~docv:"REPO" []
-
 let cmd =
-  let doc = "Monitor a GitHub repository." in
+  let doc = "Deploy from a GitHub app's repositories." in
   let info = Cmd.info program_name ~doc in
   Cmd.v info
-    Term.(term_result (const main $ Current.Config.cmdliner $ Current_github.Auth.cmdliner $ Current_web.cmdliner $ Current_github.Api.cmdliner $ repo))
+    Term.(term_result (const main $ Current.Config.cmdliner $ Current_github.Auth.cmdliner $ Current_web.cmdliner $ Current_github.App.cmdliner))
 
 let () = exit @@ Cmd.eval cmd

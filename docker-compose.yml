@@ -1,16 +1,14 @@
 services:
   configurator:
-    image: mtelvers/ocurrent-configurator:latest
-    command: mtelvers/ansible --github-webhook-secret-file /run/secrets/webhook-secret --github-oauth /run/secrets/oauth.json --github-token-file /run/secrets/github-activity-token --confirm average
-    ports:
-      - 8080:8080
+    image: ocurrent/ocurrent-configurator:live
+    command: --github-app-id 812230 --github-oauth /run/secrets/oauth.json --github-webhook-secret-file /run/secrets/webhook-secret --github-private-key-file /run/secrets/private-key --github-account-allowlist mtelvers --confirm average
     volumes:
       - configurator_data:/var/lib/ocurrent-configurator
     restart: always
     secrets:
-      - webhook-secret
       - oauth.json
-      - github-activity-token
+      - webhook-secret
+      - private-key
       - configurator-private-key
       - admin.cap
       - vault-password
@@ -27,7 +25,11 @@ services:
       - ocaml.ci.dev.yml
       - opam.ci.ocaml.org.yml
       - opam.ocaml.org.yml
+      - watcher.ci.dev.yml
       - worker.yml
+      - ci.mirageos.org.yml
+      - staging.ocaml.org.yml
+      - www.ocaml.org.yml
 volumes:
   configurator_data:
 secrets:
@@ -35,8 +37,8 @@ secrets:
     file: secrets/webhook-secret
   oauth.json:
     file: secrets/oauth.json
-  github-activity-token:
-    file: secrets/github-activity-token
+  private-key:
+    file: secrets/private-key
   configurator-private-key:
     file: secrets/configurator-private-key
   admin.cap:
@@ -71,7 +73,15 @@ secrets:
     file: secrets/opam.ocaml.org.yml
   worker.yml:
     file: secrets/worker.yml
+  ci.mirageos.org.yml:
+    file: secrets/ci.mirageos.org.yml
+  watcher.ci.dev.yml:
+    file: secrets/watcher.ci.dev.yml
+  staging.ocaml.org.yml:
+    file: secrets/staging.ocaml.org.yml
+  www.ocaml.org.yml:
+    file: secrets/www.ocaml.org.yml
 networks:
   default:
-    name: label_maker_default
+    name: observer
     external: true
