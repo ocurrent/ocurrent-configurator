@@ -7,9 +7,8 @@ WORKDIR /src
 COPY --chown=opam ocurrent-configurator.opam /src/
 RUN opam pin -yn add .
 RUN opam install -y --deps-only .
-RUN opam install ocluster -y
 ADD --chown=opam . .
-RUN opam config exec -- dune build ./_build/install/default/bin/ocurrent-configurator
+RUN opam exec -- dune build ./_build/install/default/bin/ocurrent-configurator
 
 FROM ubuntu:noble
 RUN apt update && apt install libsqlite3-dev libev-dev ca-certificates git netbase graphviz ssh curl gpg -y --no-install-recommends
