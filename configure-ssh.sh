@@ -39,7 +39,6 @@ for host in \
   c2-1.equinix.ci.dev \
   ci3.ocamllabs.io \
   ci4.ocamllabs.io \
-  ci.mirage.io \
   ci.ocamllabs.io \
   deploy.ci.ocaml.org \
   deploy.ci.dev \
@@ -51,6 +50,8 @@ for host in \
   opam-4.ocaml.org \
   opam-5.ocaml.org \
   v2.ocaml.org \
+  ci.mirageos.org \
+  get.dune.build \
   v3b.ocaml.org \
   v3c.ocaml.org \
   watch.ocaml.org \

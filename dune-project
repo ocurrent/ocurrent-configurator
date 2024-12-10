@@ -23,6 +23,7 @@
   ocaml
   dune
   (current (>= 0.6.4))
+  ocluster ; needed for ocluster-admin
   current_web
   current_git
   current_github
