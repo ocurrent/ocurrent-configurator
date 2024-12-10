@@ -1,14 +1,14 @@
 services:
   configurator:
     image: ocurrent/ocurrent-configurator:live
-    command: --github-app-id 812230 --github-oauth /run/secrets/oauth.json --github-webhook-secret-file /run/secrets/webhook-secret --github-private-key-file /run/secrets/private-key --github-account-allowlist mtelvers --confirm average
+    command: --github-app-id 812230 --github-oauth /run/secrets/github-oauth.json --github-webhook-secret-file /run/secrets/github-webhook-secret --github-private-key-file /run/secrets/github-private-key --github-account-allowlist mtelvers --confirm average
     volumes:
       - configurator_data:/var/lib/ocurrent-configurator
     restart: always
     secrets:
-      - oauth.json
-      - webhook-secret
-      - private-key
+      - github-oauth.json
+      - github-webhook-secret
+      - github-private-key
       - configurator-private-key
       - admin.cap
       - vault-password
@@ -33,12 +33,12 @@ services:
 volumes:
   configurator_data:
 secrets:
-  webhook-secret:
-    file: secrets/webhook-secret
-  oauth.json:
-    file: secrets/oauth.json
-  private-key:
-    file: secrets/private-key
+  github-webhook-secret:
+    file: secrets/github-webhook-secret
+  github-oauth.json:
+    file: secrets/github-oauth.json
+  github-private-key:
+    file: secrets/github-private-key
   configurator-private-key:
     file: secrets/configurator-private-key
   admin.cap:
